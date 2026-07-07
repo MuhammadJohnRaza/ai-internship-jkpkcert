@@ -1,21 +1,21 @@
-"""
-========================================================
-PKCERT AI & Software Development Internship
-Task 04 - Part C: Data Analysis Mini Project (30 Marks)
-Dataset  : Titanic (loaded via seaborn)
-Objective: Read, clean, analyse and summarise the dataset
-========================================================
-"""
+\
+\
+\
+\
+\
+\
+\
+   
 
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib
-matplotlib.use("Agg")          # non-interactive backend (saves to file)
+matplotlib.use("Agg")                                                   
 import matplotlib.pyplot as plt
 import os
 
-# ── Output directory for saved plots ──────────────────
+                                                        
 PLOT_DIR = os.path.join(os.path.dirname(__file__), "plots")
 os.makedirs(PLOT_DIR, exist_ok=True)
 
@@ -25,9 +25,7 @@ def save(fig, name):
     plt.close(fig)
     print(f"  [saved] {path}")
 
-# ══════════════════════════════════════════════════════
-# STEP 1 - LOAD DATASET
-# ══════════════════════════════════════════════════════
+                                                        
 print("=" * 60)
 print("STEP 1: Loading Titanic Dataset (seaborn)")
 print("=" * 60)
@@ -38,9 +36,7 @@ print(f"  Columns       : {df.columns.tolist()}")
 print(f"\n[First 5 rows]\n{df.head()}")
 print(f"\n[Data types]\n{df.dtypes}")
 
-# ══════════════════════════════════════════════════════
-# STEP 2 - MISSING VALUE ANALYSIS & CLEANING
-# ══════════════════════════════════════════════════════
+                                                        
 print("\n" + "=" * 60)
 print("STEP 2: Missing Value Analysis & Data Cleaning")
 print("=" * 60)
@@ -51,35 +47,34 @@ missing_df = pd.DataFrame({"Missing": missing, "Pct%": pct})
 missing_df = missing_df[missing_df["Missing"] > 0].sort_values("Missing", ascending=False)
 print(f"\n[Missing values before cleaning]\n{missing_df}")
 
-# ── Cleaning decisions ────────────────────────────────
-# 1. 'age'   : ~20% missing -> fill with median grouped by pclass & sex
+                                                        
 df["age"] = df.groupby(["pclass","sex"])["age"].transform(
     lambda x: x.fillna(x.median())
 )
 
-# 2. 'embarked' : 2 rows missing -> fill with mode
+                                                  
 df["embarked"].fillna(df["embarked"].mode()[0], inplace=True)
 df["embark_town"].fillna(df["embark_town"].mode()[0], inplace=True)
 
-# 3. 'deck'  : 77% missing -> drop column (too sparse to impute reliably)
+                                                                         
 df.drop(columns=["deck"], inplace=True)
 
-# 4. 'alive' is a duplicate of 'survived' (string form) -> drop
+                                                               
 df.drop(columns=["alive"], inplace=True)
 
-# 5. Verify
+           
 remaining = df.isnull().sum()
 remaining = remaining[remaining > 0]
 print(f"\n[Missing values after cleaning]\n{remaining if len(remaining) else '  None -- dataset is clean!'}")
 print(f"\n  Final shape   : {df.shape}")
 
-# ── Correct dtypes ─────────────────────────────────────
+                                                         
 df["survived"] = df["survived"].astype(int)
 df["pclass"]   = df["pclass"].astype("category")
 df["sex"]      = df["sex"].astype("category")
 df["embarked"] = df["embarked"].astype("category")
 
-# ── Derived features ──────────────────────────────────
+                                                        
 df["family_size"]  = df["sibsp"] + df["parch"] + 1
 df["is_alone"]     = (df["family_size"] == 1).astype(int)
 df["age_group"]    = pd.cut(df["age"],
@@ -90,9 +85,7 @@ df["fare_band"]    = pd.qcut(df["fare"], q=4,
 
 print(f"\n[New derived features added]: family_size, is_alone, age_group, fare_band")
 
-# ══════════════════════════════════════════════════════
-# STEP 3 - SUMMARY STATISTICS
-# ══════════════════════════════════════════════════════
+                                                        
 print("\n" + "=" * 60)
 print("STEP 3: Summary Statistics")
 print("=" * 60)
@@ -100,39 +93,37 @@ print("=" * 60)
 print("\n[Overall describe (numeric)]\n", df.describe().round(2))
 print("\n[Categorical describe]\n", df.describe(include="category"))
 
-# Survival rate
+               
 surv_rate = df["survived"].mean() * 100
 print(f"\n  Overall survival rate : {surv_rate:.1f}%")
 print(f"  Total passengers      : {len(df)}")
 print(f"  Survivors             : {df['survived'].sum()}")
 print(f"  Non-survivors         : {(1-df['survived']).sum()}")
 
-# By sex
+        
 print("\n[Survival rate by Sex]\n",
       df.groupby("sex")["survived"].agg(["sum","mean","count"])
         .rename(columns={"sum":"Survived","mean":"Rate","count":"Total"})
         .assign(Rate=lambda x: (x["Rate"]*100).round(1)))
 
-# By class
+          
 print("\n[Survival rate by Passenger Class]\n",
       df.groupby("pclass", observed=True)["survived"].agg(["sum","mean","count"])
         .rename(columns={"sum":"Survived","mean":"Rate","count":"Total"})
         .assign(Rate=lambda x: (x["Rate"]*100).round(1)))
 
-# By age group
+              
 print("\n[Survival rate by Age Group]\n",
       df.groupby("age_group", observed=True)["survived"].agg(["sum","mean","count"])
         .rename(columns={"sum":"Survived","mean":"Rate","count":"Total"})
         .assign(Rate=lambda x: (x["Rate"]*100).round(1)))
 
-# Fare stats by class
+                     
 print("\n[Fare Statistics by Class]\n",
       df.groupby("pclass", observed=True)["fare"]
         .agg(["min","mean","median","max"]).round(2))
 
-# ══════════════════════════════════════════════════════
-# STEP 4 - EXPLORATORY DATA ANALYSIS (EDA)
-# ══════════════════════════════════════════════════════
+                                                        
 print("\n" + "=" * 60)
 print("STEP 4: Exploratory Data Analysis (EDA)")
 print("=" * 60)
@@ -140,7 +131,7 @@ print("=" * 60)
 sns.set_theme(style="darkgrid", palette="muted")
 BLUE, RED = "#4C72B0", "#C44E52"
 
-# ── Plot 1: Survival Count ─────────────────────────────
+                                                         
 fig, ax = plt.subplots(figsize=(6, 4))
 survived_counts = df["survived"].value_counts().sort_index()
 bars = ax.bar(["Did Not Survive", "Survived"],
@@ -155,7 +146,7 @@ ax.set_title("Passenger Survival Count", fontsize=14, fontweight="bold")
 ax.set_ylabel("Number of Passengers")
 save(fig, "01_survival_count.png")
 
-# ── Plot 2: Survival by Sex ───────────────────────────
+                                                        
 fig, ax = plt.subplots(figsize=(7, 4))
 sex_surv = df.groupby(["sex","survived"], observed=True).size().unstack()
 sex_surv.columns = ["Did Not Survive", "Survived"]
@@ -167,7 +158,7 @@ ax.set_ylabel("Count")
 ax.legend(title="Outcome")
 save(fig, "02_survival_by_sex.png")
 
-# ── Plot 3: Survival by Passenger Class ──────────────
+                                                       
 fig, ax = plt.subplots(figsize=(7, 4))
 class_surv = df.groupby(["pclass","survived"], observed=True).size().unstack()
 class_surv.columns = ["Did Not Survive", "Survived"]
@@ -179,7 +170,7 @@ ax.set_ylabel("Count")
 ax.legend(title="Outcome")
 save(fig, "03_survival_by_class.png")
 
-# ── Plot 4: Age Distribution by Survival ─────────────
+                                                       
 fig, ax = plt.subplots(figsize=(9, 4))
 for surv, color, label in [(0, RED, "Did Not Survive"), (1, BLUE, "Survived")]:
     ax.hist(df[df["survived"]==surv]["age"].dropna(),
@@ -196,7 +187,7 @@ ax.set_ylabel("Count")
 ax.legend()
 save(fig, "04_age_distribution.png")
 
-# ── Plot 5: Fare Distribution (log scale) ────────────
+                                                       
 fig, ax = plt.subplots(figsize=(9, 4))
 for surv, color, label in [(0, RED, "Did Not Survive"), (1, BLUE, "Survived")]:
     data = df[df["survived"]==surv]["fare"].dropna() + 0.1
@@ -209,7 +200,7 @@ ax.set_ylabel("Count (log)")
 ax.legend()
 save(fig, "05_fare_distribution.png")
 
-# ── Plot 6: Survival Rate by Age Group ───────────────
+                                                       
 fig, ax = plt.subplots(figsize=(9, 4))
 age_rate = (df.groupby("age_group", observed=True)["survived"].mean() * 100).round(1)
 bars = ax.bar(age_rate.index.astype(str), age_rate.values,
@@ -225,7 +216,7 @@ ax.set_ylabel("Survival Rate (%)")
 ax.set_ylim(0, 80)
 save(fig, "06_survival_by_age_group.png")
 
-# ── Plot 7: Correlation Heatmap ───────────────────────
+                                                        
 fig, ax = plt.subplots(figsize=(9, 6))
 numeric_df = df.select_dtypes(include=[np.number])
 corr = numeric_df.corr()
@@ -237,7 +228,7 @@ ax.set_title("Correlation Heatmap (Numeric Features)",
              fontsize=14, fontweight="bold")
 save(fig, "07_correlation_heatmap.png")
 
-# ── Plot 8: Family Size vs Survival ──────────────────
+                                                       
 fig, ax = plt.subplots(figsize=(9, 4))
 fam_rate = (df.groupby("family_size")["survived"].mean() * 100).round(1)
 ax.plot(fam_rate.index, fam_rate.values,
@@ -251,7 +242,7 @@ ax.set_xticks(fam_rate.index)
 ax.set_ylim(0, 100)
 save(fig, "08_family_size_survival.png")
 
-# ── Plot 9: Embarkation Port vs Survival ─────────────
+                                                       
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 embark_count = df.groupby(["embarked","survived"], observed=True).size().unstack(fill_value=0)
 embark_rate  = (df.groupby("embarked", observed=True)["survived"].mean() * 100).round(1)
@@ -272,7 +263,7 @@ axes[1].set_ylim(0, 80)
 fig.suptitle("Embarkation Port Analysis", fontsize=14, fontweight="bold")
 save(fig, "09_embarkation_analysis.png")
 
-# ── Plot 10: Pclass x Sex Survival Heatmap ────────────
+                                                        
 fig, ax = plt.subplots(figsize=(7, 4))
 pivot = df.pivot_table(values="survived", index="sex",
                         columns="pclass", aggfunc="mean",
@@ -284,9 +275,7 @@ ax.set_title("Survival Rate (%) - Sex x Passenger Class",
              fontsize=14, fontweight="bold")
 save(fig, "10_sex_class_heatmap.png")
 
-# ══════════════════════════════════════════════════════
-# STEP 5 - KEY FINDINGS SUMMARY
-# ══════════════════════════════════════════════════════
+                                                        
 print("\n" + "=" * 60)
 print("STEP 5: Key Findings Summary")
 print("=" * 60)
